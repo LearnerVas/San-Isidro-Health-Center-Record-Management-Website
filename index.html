@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barangay San Isidro Health Center | Management System</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-circle">SI</div>
+            <h2 class="font-bold text-lg text-slate-800">San Isidro HC</h2>
+        </div>
+        
+        <nav class="nav-links">
+            <div class="nav-item active" data-section="dashboard">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" data-section="patients">
+                <i data-lucide="users"></i>
+                <span>Patient Profiling</span>
+            </div>
+            <div class="nav-item" data-section="immunization">
+                <i data-lucide="syringe"></i>
+                <span>Immunization</span>
+            </div>
+            <div class="nav-item" data-section="inventory">
+                <i data-lucide="package"></i>
+                <span>Medicine Inventory</span>
+            </div>
+            <div class="nav-item" data-section="analytics">
+                <i data-lucide="bar-chart-3"></i>
+                <span>Data Analytics</span>
+            </div>
+            <div class="nav-item" data-section="reports">
+                <i data-lucide="history"></i>
+                <span>Reports History</span>
+            </div>
+        </nav>
+
+        <div class="px-4 mb-8">
+            <div class="card bg-blue-50 border-blue-100 p-4">
+                <p class="text-xs font-semibold text-blue-600 mb-2 uppercase">System Status</p>
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                    <span class="text-sm text-slate-600">Online & Secure</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h1 id="section-title" class="text-2xl font-bold text-slate-800">Dashboard</h1>
+                <p class="text-slate-500">Welcome back, Health Officer</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <button id="generate-report-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-all">
+                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                    Generate Report
+                </button>
+                <div class="w-10 h-10 rounded-full bg-slate-200 border-2 border-white shadow-sm flex items-center justify-center">
+                    <i data-lucide="user" class="text-slate-500 w-5 h-5"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Report Progress (Initially Hidden) -->
+        <div id="report-status" class="hidden mb-8 section-fade">
+            <div class="card">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium text-slate-700">Simulating Health Analytics Report...</span>
+                    <span id="progress-percent" class="text-sm font-bold text-blue-600">0%</span>
+                </div>
+                <div class="progress-container">
+                    <div id="report-progress"></div>
+                </div>
+                <p class="text-xs text-slate-400 mt-2">The system remains responsive during processing.</p>
+            </div>
+        </div>
+
+        <!-- Dynamic Section Container -->
+        <div id="content-area">
+            <!-- Dashboard (Initial) -->
+            <div id="dashboard-section" class="section-fade">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="card stat-card">
+                        <div class="icon-box icon-blue">
+                            <i data-lucide="users"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-slate-500">Total Patients</p>
+                            <h3 id="stat-total-patients" class="text-2xl font-bold">0</h3>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="icon-box icon-teal">
+                            <i data-lucide="activity"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-slate-500">Active Programs</p>
+                            <h3 class="text-2xl font-bold">4</h3>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="icon-box icon-purple">
+                            <i data-lucide="calendar"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-slate-500">Today's Visits</p>
+                            <h3 class="text-2xl font-bold">12</h3>
+                        </div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="icon-box icon-orange">
+                            <i data-lucide="alert-circle"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-slate-500">Low Stock Meds</p>
+                            <h3 id="stat-low-stock" class="text-2xl font-bold">0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="card lg:col-span-2">
+                        <h4 class="font-bold text-slate-800 mb-4">Recent Patient Visits</h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="text-sm text-slate-500 border-b">
+                                    <tr>
+                                        <th class="pb-3">Name</th>
+                                        <th class="pb-3">Purpose</th>
+                                        <th class="pb-3">Date</th>
+                                        <th class="pb-3">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recent-visits-table" class="text-sm">
+                                    <tr>
+                                        <td colspan="4" class="py-4 text-center text-slate-400">No recent records found.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h4 class="font-bold text-slate-800 mb-4">Upcoming Immunizations</h4>
+                        <ul class="space-y-4">
+                            <li class="flex items-center gap-3">
+                                <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                                <div>
+                                    <p class="text-sm font-medium">Polio Vaccine - Batch A</p>
+                                    <p class="text-xs text-slate-400">Tomorrow at 8:00 AM</p>
+                                </div>
+                            </li>
+                            <li class="flex items-center gap-3">
+                                <div class="w-2 h-2 rounded-full bg-teal-500"></div>
+                                <div>
+                                    <p class="text-sm font-medium">Flu Shots - Senior Citizens</p>
+                                    <p class="text-xs text-slate-400">Oct 25, 2023</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patient Profiling Section -->
+            <div id="patients-section" class="hidden section-fade">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold">Patient Records</h3>
+                    <button id="add-patient-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">+ Add New Patient</button>
+                </div>
+                <div class="card">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="text-sm text-slate-500 border-b">
+                                <tr>
+                                    <th class="pb-3">Patient ID</th>
+                                    <th class="pb-3">Full Name</th>
+                                    <th class="pb-3">Age/Sex</th>
+                                    <th class="pb-3">Barangay Zone</th>
+                                    <th class="pb-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="patients-table-body" class="text-sm">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Immunization Tracking -->
+            <div id="immunization-section" class="hidden section-fade">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- Medicine Inventory -->
+            <div id="inventory-section" class="hidden section-fade">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold">Medicine Stock</h3>
+                    <button id="add-inventory-btn" class="bg-teal-600 text-white px-4 py-2 rounded-lg text-sm font-medium">+ Update Stock</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Data Analytics Section -->
+            <div id="analytics-section" class="hidden section-fade">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="card">
+                        <h4 class="font-bold text-slate-800 mb-6">Patient Age Groups</h4>
+                        <div class="h-64 flex items-center justify-center">
+                            <canvas id="age-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h4 class="font-bold text-slate-800 mb-6">Sex Distribution</h4>
+                        <div class="h-64 flex items-center justify-center">
+                            <canvas id="sex-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card lg:col-span-2">
+                        <h4 class="font-bold text-slate-800 mb-6">Inventory Stock by Category</h4>
+                        <div class="h-80">
+                            <canvas id="inventory-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports History Section -->
+            <div id="reports-section" class="hidden section-fade">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold">Generated Reports</h3>
+                    <p class="text-sm text-slate-500">Historical snapshots of center data.</p>
+                </div>
+                <div class="card">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="text-sm text-slate-500 border-b">
+                                <tr>
+                                    <th class="pb-3">Report ID</th>
+                                    <th class="pb-3">Date Generated</th>
+                                    <th class="pb-3">Data Snapshot</th>
+                                    <th class="pb-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reports-table-body" class="text-sm">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    
+    <!-- Patient Modal -->
+    <div id="patient-modal" class="fixed inset-0 bg-black/50 hidden z-[200] flex items-center justify-center p-4">
+        <div class="card w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4">Add Patient Profile</h3>
+            <form id="patient-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                    <input type="text" name="name" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Age</label>
+                        <input type="number" name="age" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Sex</label>
+                        <select name="sex" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option>Male</option>
+                            <option>Female</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Zone / Address</label>
+                    <input type="text" name="zone" required placeholder="e.g., Zone 1, San Isidro" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div class="flex gap-3 mt-6">
+                    <button type="button" onclick="closeModal('patient-modal')" class="flex-1 px-4 py-2 border rounded-lg text-slate-600 hover:bg-slate-50">Cancel</button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Vaccination Modal -->
+    <div id="vac-modal" class="fixed inset-0 bg-black/50 hidden z-[200] flex items-center justify-center p-4">
+        <div class="card w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4">Record Vaccination</h3>
+            <form id="vac-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Patient Name</label>
+                    <input type="text" name="patientName" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Vaccine Type</label>
+                    <select name="vaccine" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option>BCG</option>
+                        <option>Oral Polio (OPV)</option>
+                        <option>Pneumococcal</option>
+                        <option>Flu Shot</option>
+                        <option>COVID-19 Booster</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Scheduled Date</label>
+                    <input type="date" name="date" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div class="flex gap-3 mt-6">
+                    <button type="button" onclick="closeModal('vac-modal')" class="flex-1 px-4 py-2 border rounded-lg text-slate-600 hover:bg-slate-50">Cancel</button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Inventory Modal -->
+    <div id="inventory-modal" class="fixed inset-0 bg-black/50 hidden z-[200] flex items-center justify-center p-4">
+        <div class="card w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4">Update Medicine Stock</h3>
+            <form id="inventory-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Medicine Name</label>
+                    <input type="text" name="name" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Stock Amount</label>
+                        <input type="number" name="stock" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Unit</label>
+                        <input type="text" name="unit" required placeholder="e.g., Tabs, Vials" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                    <select name="category" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 outline-none">
+                        <option>Fever</option>
+                        <option>Antibiotic</option>
+                        <option>Allergy</option>
+                        <option>Dehydration</option>
+                        <option>First Aid</option>
+                    </select>
+                </div>
+                <div class="flex gap-3 mt-6">
+                    <button type="button" onclick="closeModal('inventory-modal')" class="flex-1 px-4 py-2 border rounded-lg text-slate-600 hover:bg-slate-50">Cancel</button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700">Update Inventory</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Report Modal -->
+    <div id="view-report-modal" class="fixed inset-0 bg-black/50 hidden z-[200] flex items-center justify-center p-4">
+        <div class="card w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="text-2xl font-bold text-slate-800">Health Center Status Report</h3>
+                    <p id="report-modal-date" class="text-sm text-slate-500"></p>
+                </div>
+                <button onclick="closeModal('view-report-modal')" class="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                    <i data-lucide="x" class="text-slate-500"></i>
+                </button>
+            </div>
+            
+            <div id="report-readable-content" class="flex-1 overflow-auto space-y-8 pr-2">
+                <!-- Populated by JS -->
+            </div>
+
+            <div class="mt-8 flex justify-between items-center pt-6 border-t">
+                <button id="toggle-raw-json" class="text-sm text-blue-600 hover:underline">View Technical JSON</button>
+                <button onclick="closeModal('view-report-modal')" class="px-8 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-all">Close Report</button>
+            </div>
+            
+            <!-- Hidden Raw JSON View -->
+            <div id="raw-json-container" class="hidden mt-4 bg-slate-900 rounded-lg p-4 overflow-auto max-h-40">
+                <pre id="report-json-display" class="text-[10px] text-green-400 font-mono"></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
